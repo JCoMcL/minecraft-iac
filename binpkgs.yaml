@@ -5,26 +5,14 @@
     path: /etc/portage/make.conf
 
   tasks:
-  - name: Look for heading
-    lineinfile:
-      path: '{{path}}'
-      regexp: '# {{ansible_play_name}}'
-      state: absent
-      create: yes
-    check_mode: true
-    changed_when: false # This just makes things look prettier in the logs
-    register: check
-  
   - name: Add block if heading not present
     blockinfile:
       path: '{{path}}'
       state: present
+      marker: '# {{ansible_play_name}} {mark}'
       block: |
-        # {{ansible_play_name}}
-        helloworld
-    when: check.found == 0
+        FEATURES="getbinpkg"
+        # Require that all binpkgs be signed and reject them if they are not (or have an invalid sig)
+        FEATURES="binpkg-request-signature"
+      #prepend_newline: yes #enable this when updated
 
-  - name: Add binpkgs features if not present
-    replace:
-      path: '{{path}}'
-      regexp: '{{path}}'
