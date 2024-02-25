@@ -1,0 +1,30 @@
+- name: Prefer Binary Packages
+  hosts: all
+
+  vars:
+    path: /etc/portage/make.conf
+
+  tasks:
+  - name: Look for heading
+    lineinfile:
+      path: '{{path}}'
+      regexp: '# {{ansible_play_name}}'
+      state: absent
+      create: yes
+    check_mode: true
+    changed_when: false # This just makes things look prettier in the logs
+    register: check
+  
+  - name: Add block if heading not present
+    blockinfile:
+      path: '{{path}}'
+      state: present
+      block: |
+        # {{ansible_play_name}}
+        helloworld
+    when: check.found == 0
+
+  - name: Add binpkgs features if not present
+    replace:
+      path: '{{path}}'
+      regexp: '{{path}}'

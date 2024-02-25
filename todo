@@ -1,0 +1,19 @@
+1. change license settings to allow all
+	sed -Ei 's/^(ACCEPT_LICENSE=)".*"/\1"\*"/p' /etc/portage/make.conf
+	sed -E 's/^(ACCEPT_LICENSE=)"(.*)"/\1"\2 Mojang"/' /etc/portage/make.conf
+2. enable self configuring of portage
+	echo CONFIG_PROTECT_MASK=\"/etc/portage\" >> /etc/portage/make.conf
+4. install minecraft-server
+	emerge --autounmask --autounmask-write
+	There's some more gentoo-specific stuff here I should be aware of
+5. set up minecraft user
+	useradd -d /srv/minecraft -m -U minecraft
+	cd srv/minecraft
+	su minecraft
+6. agree to EULA
+	minecraft-server || sed -i s/false/true eula.txt
+7. run server fr
+FREE_MEM="`free -m | awk 'NR == 2 {print $4}'`" &&
+dtach -n minecraft.dtach minecraft-server -Xmx"$FREE_MEM"m -Xms"$FREE_MEM"m
+
+
