@@ -1,0 +1,26 @@
+- name: Prefer Binary Packages
+  hosts: all
+
+  vars:
+    minecraft_port: 25575
+    minecraft_server_directory: /srv/minecraft
+
+  tasks:
+    - name: enable minecraft traffic
+      community.general.ufw:
+        rule: allow
+        port: '{{minecraft_port}}'
+    - name: enable ssh traffic
+      community.general.ufw:
+        rule: allow
+        name: SSH
+    - name: enable firewall
+      community.general.ufw:
+        state: enabled
+        policy: deny
+    - name: configure minecraft server to use the specified port
+      lineinfile:
+        path: '{{minecraft_server_directory}}/server.properties'
+        regexp: 'server-port=.*$'
+        line: 'server-port={{minecraft_port}}'
+
